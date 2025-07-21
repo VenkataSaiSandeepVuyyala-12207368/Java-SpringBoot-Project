@@ -1,5 +1,7 @@
 package com.proj.sms.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "materials")
 public class Material {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,14 +39,13 @@ public class Material {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User uploadedBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id", nullable = false)
+    @JsonIgnoreProperties({"materials"})
     private Subject subject;
-
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rating> ratings = new ArrayList<>();
 
     // Constructors
     public Material() {}
@@ -56,7 +56,6 @@ public class Material {
         this.url = url;
         this.type = type;
     }
-
     // Getters
     public Long getId() {
         return id;
@@ -88,10 +87,6 @@ public class Material {
 
     public Subject getSubject() {
         return subject;
-    }
-
-    public List<Rating> getRatings() {
-        return ratings;
     }
 
     // Setters
@@ -126,26 +121,23 @@ public class Material {
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
-
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
-    }
-
     @Override
     public String toString() {
         return "Material{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
                 ", type=" + type +
                 ", createdAt=" + createdAt +
-                ", uploadedById=" + (uploadedBy != null ? uploadedBy.getId() : null) +
-                ", subjectId=" + (subject != null ? subject.getId() : null) +
+                ", uploadedBy=" + uploadedBy +
+                ", subject=" + subject +
                 '}';
     }
+
     public enum MaterialType {
         GOOGLE_DRIVE,
         YOUTUBE,
-        PDF_LINK,
         WEBSITE,
         OTHER
     }

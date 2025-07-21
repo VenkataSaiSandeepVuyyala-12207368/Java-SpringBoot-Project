@@ -1,5 +1,6 @@
 package com.proj.sms.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,11 +40,11 @@ public class User {
     @Column(nullable = false, length = 10)
     private Role role;
 
-    @OneToMany(mappedBy = "uploadedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "uploadedBy")
+    @JsonIgnore // This is the key change
     private List<Material> materials = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rating> ratings = new ArrayList<>();
+
 
     // Constructors
     public User() {}
@@ -80,9 +81,6 @@ public class User {
         return materials;
     }
 
-    public List<Rating> getRatings() {
-        return ratings;
-    }
 
     // Setters
     public void setId(Long id) {
@@ -109,9 +107,6 @@ public class User {
         this.materials = materials;
     }
 
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
-    }
 
     @Override
     public String toString() {
