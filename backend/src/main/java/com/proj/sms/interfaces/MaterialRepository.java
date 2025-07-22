@@ -12,4 +12,8 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
     List<Material> findByType(MaterialType type);
     List<Material> findBySubjectId(Long subjectId);
     List<Material> findByUploadedById(Long userId);
+    // New method for searching by material title
+    List<Material> findByTitleContainingIgnoreCase(String title);
+    // New method to search by uploader's username
+    List<Material> findByUploadedByUsernameContainingIgnoreCase(String username);
 }

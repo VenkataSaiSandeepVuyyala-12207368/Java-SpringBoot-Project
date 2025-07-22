@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.proj.sms.models.User;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/materials")
@@ -31,10 +34,29 @@ public class MaterialController {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PostMapping
-    public ResponseEntity<Material> createMaterial(@RequestBody Material material) {
-        Material createdMaterial = materialService.createMaterial(material);
+    public ResponseEntity<Material> createMaterial(@RequestBody Material material, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Material createdMaterial = materialService.createMaterial(material, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMaterial);
     }
+
+    @Operation(summary = "Search materials by title or uploader username")
+    @GetMapping("/search")
+    public ResponseEntity<List<Material>> searchMaterials(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String uploader) {
+        if (title != null) {
+            return ResponseEntity.ok(materialService.searchMaterialsByTitle(title));
+        }
+        if (uploader != null) {
+            return ResponseEntity.ok(materialService.getMaterialsByUploaderUsername(uploader));
+        }
+        return ResponseEntity.ok(materialService.getAllMaterials());
+    }
+
 
     @Operation(summary = "Get all materials")
     @GetMapping
@@ -82,10 +104,21 @@ public class MaterialController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Material> updateMaterial(
-            @Parameter(description = "ID of material to be updated") @PathVariable Long id,
-            @RequestBody Material materialDetails) {
-        return ResponseEntity.ok(materialService.updateMaterial(id, materialDetails));
+            @PathVariable Long id,
+            @RequestBody Material materialDetails,
+            HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            Material updatedMaterial = materialService.updateMaterial(id, materialDetails, currentUser);
+            return ResponseEntity.ok(updatedMaterial);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
+
 
     @Operation(summary = "Delete a material")
     @ApiResponses(value = {
@@ -93,9 +126,16 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", description = "Material not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMaterial(
-            @Parameter(description = "ID of material to be deleted") @PathVariable Long id) {
-        materialService.deleteMaterial(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteMaterial(@PathVariable Long id, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            materialService.deleteMaterial(id, currentUser);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }

@@ -6,14 +6,28 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder; // Add this
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) { // Modify constructor
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder; // Add this
+    }
+
+
+    // New method for login validation
+    public Optional<User> validateUser(String username, String password) {
+        return userRepository.findByUsername(username)
+                .filter(user -> {
+                    // In a real app: passwordEncoder.matches(password, user.getPassword())
+                    return user.getPassword().equals(password);
+                });
     }
 
     public User createUser(User user) {

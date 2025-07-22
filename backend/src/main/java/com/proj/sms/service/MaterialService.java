@@ -5,20 +5,30 @@ import com.proj.sms.models.Material;
 import com.proj.sms.models.Material.MaterialType;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import com.proj.sms.models.User; // Import User
+
 
 @Service
 public class MaterialService {
 
     private final MaterialRepository materialRepository;
 
+
     public MaterialService(MaterialRepository materialRepository) {
         this.materialRepository = materialRepository;
     }
 
     // CREATE
-    public Material createMaterial(Material material) {
-        // In a real app, you would set the uploader and subject from the security context or request DTO
+    public Material createMaterial(Material material, User uploader) {
+        material.setUploadedBy(uploader);
         return materialRepository.save(material);
+    }
+    public List<Material> searchMaterialsByTitle(String title) {
+        return materialRepository.findByTitleContainingIgnoreCase(title);
+    }
+    public List<Material> getMaterialsByUploaderUsername(String username) {
+        return materialRepository.findByUploadedByUsernameContainingIgnoreCase(username);
     }
 
     // READ (Single)
@@ -48,21 +58,31 @@ public class MaterialService {
     }
 
     // UPDATE
-    public Material updateMaterial(Long id, Material materialDetails) {
-        Material material = getMaterialById(id);
+    public Material updateMaterial(Long id, Material materialDetails, User currentUser) {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Material not found with id: " + id));
+
+        if (!material.getUploadedBy().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("User not authorized to update this material");
+        }
+
         material.setTitle(materialDetails.getTitle());
         material.setDescription(materialDetails.getDescription());
         material.setUrl(materialDetails.getUrl());
         material.setType(materialDetails.getType());
-        // The subject and uploader are generally not changed after creation
+        material.setSubject(materialDetails.getSubject());
+
         return materialRepository.save(material);
     }
-
     // DELETE
-    public void deleteMaterial(Long id) {
-        if (!materialRepository.existsById(id)) {
-            throw new RuntimeException("Material not found with id: " + id);
+    public void deleteMaterial(Long id, User currentUser) {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Material not found with id: " + id));
+
+        if (!material.getUploadedBy().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("User not authorized to delete this material");
         }
-        materialRepository.deleteById(id);
+
+        materialRepository.delete(material);
     }
 }
