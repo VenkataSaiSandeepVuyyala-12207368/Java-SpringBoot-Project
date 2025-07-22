@@ -1,19 +1,11 @@
 package com.proj.sms.controller;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.proj.sms.models.Material;
 import com.proj.sms.models.User;
 import com.proj.sms.service.UserService;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

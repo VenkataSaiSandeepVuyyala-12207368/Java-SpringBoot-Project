@@ -30,7 +30,6 @@ public class SubjectService {
         return subjectRepository.findAll();
     }
 
-    // ✅ ADD THIS METHOD
     // READ (Search by Name)
     public List<Subject> searchSubjectsByName(String keyword) {
         return subjectRepository.findByNameContainingIgnoreCase(keyword);

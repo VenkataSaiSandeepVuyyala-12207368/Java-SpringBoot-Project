@@ -7,28 +7,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email")
-        })
+@Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
     @Size(max = 20)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20,unique = true)
     private String username;
 
     @NotBlank
     @Size(max = 50)
     @Email
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50,unique = true)
     private String email;
 
     @NotBlank
@@ -43,8 +37,6 @@ public class User {
     @OneToMany(mappedBy = "uploadedBy")
     @JsonIgnore // This is the key change
     private List<Material> materials = new ArrayList<>();
-
-
 
     // Constructors
     public User() {}
@@ -118,6 +110,7 @@ public class User {
                 '}';
     }
     public enum Role {
+        ADMIN,
         STUDENT,
         TEACHER
     }
