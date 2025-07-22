@@ -1,4 +1,4 @@
-xpackage com.proj.sms.service;
+package com.proj.sms.service;
 
 import com.proj.sms.interfaces.UserRepository;
 import com.proj.sms.models.User;
@@ -24,10 +24,7 @@ public class UserService {
     // New method for login validation
     public Optional<User> validateUser(String username, String password) {
         return userRepository.findByUsername(username)
-                .filter(user -> {
-                    // In a real app: passwordEncoder.matches(password, user.getPassword())
-                    return user.getPassword().equals(password);
-                });
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
     public User createUser(User user) {
