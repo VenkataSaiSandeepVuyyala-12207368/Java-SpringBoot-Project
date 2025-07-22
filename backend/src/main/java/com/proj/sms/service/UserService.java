@@ -1,4 +1,4 @@
-xpackage com.proj.sms.service;
+package com.proj.sms.service;
 
 import com.proj.sms.interfaces.UserRepository;
 import com.proj.sms.models.User;
@@ -25,7 +25,7 @@ public class UserService {
     }
 
     public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+          return userRepository.findById(id);
     }
 
     public Optional<User> getUserByUsername(String username) {
@@ -42,7 +42,7 @@ public class UserService {
 
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
-        // Update other fields as needed
+
 
         return userRepository.save(user);
     }
