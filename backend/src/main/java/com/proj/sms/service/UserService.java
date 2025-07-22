@@ -1,4 +1,4 @@
-package com.proj.sms.service;
+xpackage com.proj.sms.service;
 
 import com.proj.sms.interfaces.UserRepository;
 import com.proj.sms.models.User;

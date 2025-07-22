@@ -9,26 +9,33 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Educational material resource")
 @Entity
 @Table(name = "materials")
 public class Material {
+    @Schema(description = "Unique identifier of the material", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Title of the material", example = "Introduction to Spring Boot")
     @NotBlank
     @Size(max = 200)
     @Column(nullable = false, length = 200)
     private String title;
 
+    @Schema(description = "Description of the material", example = "Basic concepts of Spring Boot framework")
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Schema(description = "URL to access the material", example = "https://example.com/material.pdf")
     @NotBlank
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;
 
+    @Schema(description = "Type of the material")
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

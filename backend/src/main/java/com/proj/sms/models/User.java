@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "User entity")
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
@@ -16,26 +17,31 @@ import java.util.List;
         })
 public class User {
 
+    @Schema(description = "Unique identifier of the user", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Username for login", example = "john_doe")
     @NotBlank
     @Size(max = 20)
     @Column(nullable = false, length = 20)
     private String username;
 
+    @Schema(description = "Email address of the user", example = "john@example.com")
     @NotBlank
     @Size(max = 50)
     @Email
     @Column(nullable = false, length = 50)
     private String email;
 
+    @Schema(description = "Password", example = "securePassword123")
     @NotBlank
     @Size(max = 120)
     @Column(nullable = false, length = 120)
     private String password;
 
+    @Schema(description = "Role of the user (STUDENT or TEACHER)")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private Role role;

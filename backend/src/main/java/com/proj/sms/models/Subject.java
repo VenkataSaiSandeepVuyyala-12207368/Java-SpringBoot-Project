@@ -6,14 +6,17 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "Subject entity")
 @Entity
 @Table(name = "subjects")
 public class Subject {
 
+    @Schema(description = "Unique identifier of the subject", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Name of the subject", example = "Mathematics")
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false, unique = true)  // Added unique constraint
